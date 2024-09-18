@@ -1,47 +1,65 @@
 package com.example.mobile_todo
 
+import android.content.DialogInterface
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.mobile_todo.ui.theme.Mobile_TODOTheme
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.mobile_todo.adapters.ToDoAdapter
+import com.example.mobile_todo.interfaces.DialogCloseListener
+import com.example.mobile_todo.utils.DatabaseHandler
+import kotlinx.serialization.Serializable
+import java.util.Collections
 
-class MainActivity : ComponentActivity() {
+
+@Serializable
+data class TaskData(val id: Int, val text: String)
+
+class MainActivity : AppCompatActivity(), DialogCloseListener {
+    private lateinit var tasksRecyclerView: RecyclerView
+    private lateinit var tasksAdapter: ToDoAdapter
+    private var taskList: MutableList<Task>? = null
+    private lateinit var addButton: Button
+    private lateinit var loadButton: Button
+    private lateinit var saveButton: Button
+    private var db: DatabaseHandler? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            Mobile_TODOTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
+        setContentView(R.layout.main_layout)
+        db = DatabaseHandler(this);
+        db!!.openDatabase();
+
+        tasksRecyclerView = findViewById<RecyclerView>(R.id.tasksRecyclerView)
+        tasksRecyclerView.layoutManager = LinearLayoutManager(this)
+        tasksAdapter = ToDoAdapter(db, this)
+        tasksRecyclerView.adapter = tasksAdapter
+        taskList = mutableListOf<Task>()
+
+        addButton = findViewById(R.id.addButton)
+
+        val itemTouchHelper = ItemTouchHelper(RecyclerItemTouchHelper(tasksAdapter))
+        itemTouchHelper.attachToRecyclerView(tasksRecyclerView)
+
+        taskList = db!!.allTasks;
+        Collections.reverse(taskList);
+
+        tasksAdapter.setTasks(taskList!!)
+
+        addButton.setOnClickListener {
+            AddNewTask.newInstance().show(supportFragmentManager, AddNewTask.TAG)
+        };
     }
+    override fun handleDialogClose(dialog: DialogInterface?) {
+        taskList = db?.allTasks;
+        Collections.reverse(taskList);
+        tasksAdapter.setTasks(taskList);
+        tasksAdapter.notifyDataSetChanged();
+    }
+
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Mobile_TODOTheme {
-        Greeting("Android")
-    }
-}

@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">Mobile_TODO</string>
-    <string name="app_title">TODO:</string>
+    <string name="app_name">TODO</string>
+    <string name="app_title">To-Do</string>
     <string name="add_text_btn">Добавить</string>
     <string name="load_text_btn">Загрузить</string>
     <string name="save_text_btn">Сохранить</string>
+    <string name="new_task_hint">Новая задача</string>
 </resources>
