@@ -48,13 +48,16 @@ class AddNewTask<Activity> : BottomSheetDialogFragment() {
             isUpdate = true
             val task = bundle.getString("task")
             newTaskText.setText(task)
-            if (task!!.isNotEmpty()) {
-                newTaskSaveButton.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.active_text_color
+
+            if (task != null) {
+                if (task.length >0) {
+                    newTaskSaveButton.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.active_text_color
+                        )
                     )
-                )
+                }
             }
         }
         db = DatabaseHandler(activity);
@@ -70,7 +73,6 @@ class AddNewTask<Activity> : BottomSheetDialogFragment() {
             } else {
                 val task = Task()
                 task.setText(text)
-                task.setStatus(0)
                 db!!.insertTask(task);
             }
             dismiss()

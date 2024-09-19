@@ -29,7 +29,7 @@ class DatabaseHandler(context: Context?) :
     fun insertTask(task: Task) {
         val cv = ContentValues()
         cv.put(TASK, task.getText())
-        cv.put(STATUS, false)
+        cv.put(STATUS, 0)
         db!!.insert(TODO_TABLE, null, cv)
     }
 
@@ -40,7 +40,7 @@ class DatabaseHandler(context: Context?) :
             var cur: Cursor? = null
             db!!.beginTransaction()
             try {
-                cur = db!!.query(TODO_TABLE, null, null, null, null, null, null, null)
+                cur = db!!.query(TODO_TABLE, null, null, null, null, null, ID + " DESC" , null)
                 if (cur != null) {
                     if (cur.moveToFirst()) {
                         do {
@@ -76,6 +76,10 @@ class DatabaseHandler(context: Context?) :
         db!!.delete(TODO_TABLE, "$ID= ?", arrayOf(id.toString()))
     }
 
+    fun clearTable() {
+        db?.delete(TODO_TABLE, null, null);
+    }
+
     companion object {
         private const val VERSION = 1
         private const val NAME = "toDoListDatabase"
@@ -85,6 +89,6 @@ class DatabaseHandler(context: Context?) :
         private const val STATUS = "status"
         private const val CREATE_TODO_TABLE =
             ("CREATE TABLE " + TODO_TABLE + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + TASK + " TEXT, "
-                    + STATUS + " BOOLEAN)")
+                    + STATUS + "INTEGER)")
     }
 }

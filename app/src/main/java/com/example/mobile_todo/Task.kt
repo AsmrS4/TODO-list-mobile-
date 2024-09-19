@@ -3,7 +3,10 @@ package com.example.mobile_todo
 class Task() {
     private var id: Int = 0;
     private var text: String = "";
-    private var status: Int = 0;
+    private var status: Int
+    init {
+        status = 0;
+    }
 
     fun getId(): Int {
         return this.id

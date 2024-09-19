@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobile_todo.AddNewTask
-import com.example.mobile_todo.utils.DatabaseHandler
 import com.example.mobile_todo.MainActivity
 import com.example.mobile_todo.R
 import com.example.mobile_todo.Task
+import com.example.mobile_todo.utils.DatabaseHandler
 
 
 class ToDoAdapter(db: DatabaseHandler?, activity: MainActivity) :
@@ -19,6 +19,7 @@ class ToDoAdapter(db: DatabaseHandler?, activity: MainActivity) :
     private var todoList: MutableList<Task>? = null
     private var activity: MainActivity? = null
     private var db: DatabaseHandler? = null
+
     init {
         this.activity = activity
         this.db = db
@@ -33,13 +34,15 @@ class ToDoAdapter(db: DatabaseHandler?, activity: MainActivity) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         db?.openDatabase();
         val item: Task = todoList!![position]
-        holder.task.setText(item.getText())
+        holder.task.text = item.getText()
         holder.task.isChecked = toBoolean(item.getStatus())
         holder.task.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                db?.updateStatus(item.getId(), 1);
+                db!!.updateStatus(item.getId(), 1)
+
             } else {
-                db?.updateStatus(item.getId(), 0);
+                db!!.updateStatus(item.getId(), 0)
+
             }
         }
     }
@@ -78,6 +81,6 @@ class ToDoAdapter(db: DatabaseHandler?, activity: MainActivity) :
     }
 
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
-        var task: CheckBox = itemView.findViewById(R.id.todoCheckBox)
+        var task: CheckBox = itemView.findViewById<CheckBox>(R.id.todoCheckBox)
     }
 }
